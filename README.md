@@ -5,3 +5,25 @@
 варианты наших сервисов.
 Поэтому сегодня вы напишете приложение на Spring Boot, в котором в зависимости от параметров будут вызываться 
 разные сервисы.
+
+### «Интеграционное тестирование»
+
+##### Описание
+1. Если ваш компьютер использует ОС Windows, тогда проверьте, что в Docker desktop в настройках, во 
+вкладке General стоит галочка напротив пункта Expose daemon on..., как на скрине ниже.
+2. Теперь вы соберёте два образа для разных окружений — dev и prod. Для этого:
+для первого установите порт server.port=8080 и профиль в dev с помощью параметра netology.profile.dev=true в 
+application.properties и соберите приложение:
+- Для maven: ./mvnw clean package (если пишет Permission denied, 
+тогда сначала выполните chmod +x ./mvnw).
+3. добавьте Dockerfile в корень проекта:
+- FROM openjdk:8-jdk-alpine
+- EXPOSE 8080
+- ADD build/libs/<название вашего архива>.jar myapp.jar
+- ENTRYPOINT ["java","-jar","/myapp.jar"]
+
+- Если вы собирали с помощью maven, тогда jar будет лежать в папке target, а если с gradle — в build/libs, и, соответственно, в ADD надо прописывать путь исходя из сборщика, который вы использовали.
+4. Напишите ваш интеграционный тест:
+добавьте в зависимость проекта: 
+- Для gradle: testImplementation 'org.testcontainers:junit-jupiter:1.15.1'
+- Для maven: org.testcontainers -- junit-jupiter
